@@ -28,7 +28,3 @@ namespace TaskNET.Models
         public DateTime? UpdatedAt { get; set; }
     }
 }
-    }
-}
-}
-}
