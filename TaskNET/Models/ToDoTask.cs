@@ -13,6 +13,7 @@ namespace TaskNET.Models
         [MaxLength(100, ErrorMessage = "Title cannot exceed 100 characters.")]
         public required string Title { get; set; }
 
+        [Required(ErrorMessage = "Description is required.")]
         [StringLength(250, ErrorMessage = "Description cannot exceed 250 characters.")]
         public required string Description { get; set; }
 
