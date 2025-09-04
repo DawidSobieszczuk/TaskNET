@@ -1,10 +1,14 @@
+using TaskNET.Data;
+using TaskNET.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddSingleton<IAppDataProvider, InMemoryDataProvider>();
 builder.Services.AddControllers();
+
+builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
