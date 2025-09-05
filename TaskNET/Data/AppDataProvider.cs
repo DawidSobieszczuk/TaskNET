@@ -36,13 +36,25 @@ namespace TaskNET.Data
         public async Task<IEnumerable<ToDoTask>> GetIncomingToDoTasksAsync(IncomingTasksFilter incomingTasksFilter = IncomingTasksFilter.Today)
         {
             var today = DateTime.UtcNow.Date;
-            IQueryable<ToDoTask> query = incomingTasksFilter switch
+
+            IQueryable<ToDoTask> query;
+
+            switch(incomingTasksFilter)
             {
-                IncomingTasksFilter.Today => _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date == today),
-                IncomingTasksFilter.Tomorrow => _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date == today.AddDays(1)),
-                IncomingTasksFilter.ThisWeek => _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date >= today && t.ExpiryDate.Value.Date <= today.AddDays(7)),
-                _ => Enumerable.Empty<ToDoTask>().AsQueryable(),
-            };
+                case IncomingTasksFilter.Today:
+                    query = _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date == today);
+                    break;
+                case IncomingTasksFilter.Tomorrow:
+                    query = _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date == today.AddDays(1));
+                    break;
+                case IncomingTasksFilter.ThisWeek:
+                    query = _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date == today && t.ExpiryDate.Value.Date <= today.AddDays(7));
+                    break;
+                default:
+                    query = Enumerable.Empty<ToDoTask>().AsQueryable();
+                    break;
+            }
+
             return await query.Where(t => !t.IsDone).ToListAsync();
         }
 
