@@ -1,0 +1,25 @@
+services:
+  tasknet:
+    image: ${DOCKER_REGISTRY-}tasknet
+    build:
+      context: .
+      dockerfile: TaskNET/Dockerfile
+    environment:
+      - DOTNET_RUNNING_IN_CONTAINER=true
+      - ConnectionStrings__DefaultConnection=Server=mysql;Database=tasknet;User=tasknet;Password=TFmVkA3ZRE45;
+    depends_on:
+      - mysql
+
+  mysql:
+    image: mysql:8.0
+    container_name: mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: D6TbmmjYRd6v
+      MYSQL_DATABASE: tasknet
+      MYSQL_USER: tasknet
+      MYSQL_PASSWORD: TFmVkA3ZRE45
+    ports:
+      - "3306:3306"
+
+volumes:
+  mysql_data:
