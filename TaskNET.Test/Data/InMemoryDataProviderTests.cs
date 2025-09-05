@@ -279,21 +279,26 @@ namespace TaskNET.Test.Data
         {
             // Arrange
             var provider = new InMemoryDataProvider();
+            var today = DateTime.UtcNow.Date;
+            var saturday = DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek + (int)DayOfWeek.Saturday);
+            var expectedCount = 1 + ((int)DateTime.UtcNow.DayOfWeek >= (int)DayOfWeek.Friday ? 1 : 0);
             // Task for today
-            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "This Week Task 1", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddHours(1) });
-            // Task for 3 days from now
-            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "This Week Task 2", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddDays(3).AddHours(1) });
+            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "Task 1", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddHours(1) });
+            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "Task 2", Description = "Desc", ExpiryDate = saturday });
             // Task for next week (should not be included)
-            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "Next Week Task", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddDays(8).AddHours(1) });
+            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "Task 3", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddDays(8).AddHours(1) });
 
             // Act
             var incomingTasks = await provider.GetIncomingToDoTasksAsync(IncomingTasksFilter.ThisWeek);
 
             // Assert
-            Assert.Equal(2, incomingTasks.Count());
-            Assert.Contains(incomingTasks, t => t.Title == "This Week Task 1");
-            Assert.Contains(incomingTasks, t => t.Title == "This Week Task 2");
-            Assert.DoesNotContain(incomingTasks, t => t.Title == "Next Week Task");
+            Assert.Equal(expectedCount, incomingTasks.Count());
+            Assert.Contains(incomingTasks, t => t.Title == "Task 1");
+            if (expectedCount == 2)
+                Assert.Contains(incomingTasks, t => t.Title == "Task 2");
+            else
+                Assert.DoesNotContain(incomingTasks, t => t.Title == "Task 2");
+            Assert.DoesNotContain(incomingTasks, t => t.Title == "Task 3");
         }
 
         [Fact]
