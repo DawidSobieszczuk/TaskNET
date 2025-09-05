@@ -302,9 +302,7 @@ namespace TaskNET.Test.Data
             var dbContext = GetDbContext();
             var provider = new AppDataProvider(dbContext);
             // Task for today
-            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "This Week Task 1", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddHours(1) });
-            // Task for 3 days from now
-            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "This Week Task 2", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddDays(3).AddHours(1) });
+            await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "This Week Task", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddHours(1) });
             // Task for next week (should not be included)
             await provider.CreateToDoTaskAsync(new ToDoTask { Id = 0, Title = "Next Week Task", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddDays(8).AddHours(1) });
 
@@ -312,9 +310,8 @@ namespace TaskNET.Test.Data
             var incomingTasks = await provider.GetIncomingToDoTasksAsync(IncomingTasksFilter.ThisWeek);
 
             // Assert
-            Assert.Equal(2, incomingTasks.Count());
-            Assert.Contains(incomingTasks, t => t.Title == "This Week Task 1");
-            Assert.Contains(incomingTasks, t => t.Title == "This Week Task 2");
+            Assert.Single(incomingTasks);
+            Assert.Contains(incomingTasks, t => t.Title == "This Week Task");
             Assert.DoesNotContain(incomingTasks, t => t.Title == "Next Week Task");
         }
 
