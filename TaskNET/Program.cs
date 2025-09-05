@@ -1,11 +1,14 @@
+using Microsoft.EntityFrameworkCore;
 using TaskNET.Data;
 using TaskNET.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("TasksNETDatabase"));
+
 // Add services to the container.
 
-builder.Services.AddSingleton<IAppDataProvider, InMemoryDataProvider>();
+builder.Services.AddScoped<IAppDataProvider, AppDataProvider>();
 builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen();
