@@ -14,16 +14,7 @@ namespace TaskNET.Test.IntegrationTests
         {
             builder.ConfigureServices(services =>
             {
-                // Replace the IAppDataProvider with an in-memory one for testing
-                var dataProviderDescriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(IAppDataProvider));
 
-                if (dataProviderDescriptor != null)
-                {
-                    services.Remove(dataProviderDescriptor);
-                }
-
-                services.AddSingleton<IAppDataProvider, InMemoryDataProvider>();
             });
         }
     }
