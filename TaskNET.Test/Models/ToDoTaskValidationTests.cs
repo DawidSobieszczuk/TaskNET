@@ -82,5 +82,58 @@ namespace TaskNET.Test.Models
             var task = new ToDoTask { Id = 1, Title = "Valid Title", Description = "Valid Description", PercentComplete = 0.5M };
             Assert.True(ValidateModel(task));
         }
+
+        [Fact]
+        public void ExpiryDate_Valid_ShouldBeValid()
+        { 
+            // Arrange
+            var task = new ToDoTask { Id = 1, Title = "Valid Title", Description = "Valid Description", PercentComplete = 0.5M, ExpiryDate = DateTime.Now.AddDays(1) };
+
+            // Act & Assert
+            Assert.True(ValidateModel(task));
+        }
+
+                [Fact]
+        public void ExpiryDate_Null_ShouldBeValid()
+        {
+            // Arrange
+            var task = new ToDoTask { Id = 1, Title = "Valid Title", Description = "Valid Description", ExpiryDate = null };
+
+            // Act & Assert
+            Assert.True(ValidateModel(task));
+        }
+
+        [Fact]
+        public void IsDone_DefaultValue_ShouldBeFalse()
+        {
+            // Arrange
+            var task = new ToDoTask { Id = 1, Title = "Valid Title", Description = "Valid Description" };
+
+            // Act & Assert
+            Assert.False(task.IsDone);
+            Assert.True(ValidateModel(task));
+        }
+
+                [Fact]
+        public void CreatedAt_DefaultValue_ShouldBeSet()
+        {
+            // Arrange
+            var task = new ToDoTask { Id = 1, Title = "Test", Description = "Desc" };
+            
+            // Assert
+            Assert.NotEqual(default(DateTime), task.CreatedAt);
+            Assert.True(ValidateModel(task)); // Ensure it's still valid after default value
+        }
+
+        [Fact]
+        public void UpdatedAt_NullDefault_ShouldBeNull()
+        {
+            // Arrange
+            var task = new ToDoTask { Id = 1, Title = "Valid Title", Description = "Valid Description" };
+
+            // Act & Assert
+            Assert.Null(task.UpdatedAt);
+            Assert.True(ValidateModel(task));
+        }
     }
 }
