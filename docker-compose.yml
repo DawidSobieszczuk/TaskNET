@@ -5,7 +5,6 @@ services:
       context: .
       dockerfile: TaskNET/Dockerfile
     environment:
-      - DOTNET_RUNNING_IN_CONTAINER=true
       - ConnectionStrings__DefaultConnection=Server=mysql;Database=tasknet;User=tasknet;Password=TFmVkA3ZRE45;
     depends_on:
       - mysql

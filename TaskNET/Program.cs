@@ -5,11 +5,10 @@ using TaskNET.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var isRunningInContainer = Environment.GetEnvironmentVariable("DOTNET_RUNNING_IN_CONTAINER") == "true";
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
-if (isRunningInContainer)
-{
-    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (connectionString != null)
+{    
     builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 }
@@ -42,7 +41,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 
-if (isRunningInContainer)
+if (connectionString != null)
 {
     using (var scope = app.Services.CreateScope())
     {
