@@ -17,9 +17,6 @@ else
     builder.Services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("TasksNETDatabase"));
 }
 
-
-// Add services to the container.
-
 builder.Services.AddScoped<IAppDataProvider, AppDataProvider>();
 builder.Services.AddControllers();
 
@@ -33,11 +30,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// Configure the HTTP request pipeline.
 
 app.UseAuthorization();
-
-
 app.MapControllers();
 
 
@@ -49,7 +43,6 @@ if (connectionString != null)
         dbContext.Database.Migrate();
     }
 }
-
 
 app.Run();
 

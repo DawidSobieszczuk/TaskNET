@@ -1,8 +1,6 @@
-using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net;
 using System.Net.Http.Json;
 using TaskNET.Models;
-using Xunit;
 
 namespace TaskNET.Test.IntegrationTests
 {
@@ -27,7 +25,7 @@ namespace TaskNET.Test.IntegrationTests
         public async Task CreateToDoTask_ReturnsCreatedTask()
         {
             // Arrange
-            var newTask = new ToDoTask { Id = 0, Title = "Integration Test Task", Description = "Description for integration test" };
+            var newTask = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/tasks", newTask);
@@ -44,96 +42,87 @@ namespace TaskNET.Test.IntegrationTests
         public async Task CreateToDoTask_ReturnsBadRequestWhenTitleIsMissing()
         {
             // Arrange
-            var newTask = new ToDoTask { Id = 0, Title = "", Description = "Description with missing title" }; // Empty title
+            var newTask = new ToDoTask { Id = 0, Title = "", Description = "Description" };
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/tasks", newTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, you can assert on the response body to check for validation errors
-            // var errors = await response.Content.ReadFromJsonAsync<ValidationProblemDetails>();
-            // Assert.NotNull(errors);
-            // Assert.Contains("Title", errors.Errors.Keys);
         }
 
         [Fact]
         public async Task CreateToDoTask_ReturnsBadRequestWhenTitleIsTooShort()
         {
             // Arrange
-            var newTask = new ToDoTask { Id = 0, Title = "ab", Description = "Description with too short title" }; // 2 characters
+            var newTask = new ToDoTask { Id = 0, Title = "ab", Description = "Description" };
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/tasks", newTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, you can assert on the response body to check for validation errors
         }
 
         [Fact]
         public async Task CreateToDoTask_ReturnsBadRequestWhenTitleIsTooLong()
         {
             // Arrange
-            var longTitle = new string('a', 101); // 101 characters, max is 100
-            var newTask = new ToDoTask { Id = 0, Title = longTitle, Description = "Description with too long title" };
+            var longText = new string('a', 101);
+            var newTask = new ToDoTask { Id = 0, Title = longText, Description = "Description" };
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/tasks", newTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task CreateToDoTask_ReturnsBadRequestWhenDescriptionIsTooLong()
         {
             // Arrange
-            var longDescription = new string('a', 251); // 251 characters, max is 250
-            var newTask = new ToDoTask { Id = 0, Title = "Valid Title", Description = longDescription };
+            var longText = new string('a', 251);
+            var newTask = new ToDoTask { Id = 0, Title = "Task", Description = longText };
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/tasks", newTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task CreateToDoTask_ReturnsBadRequestWhenPercentCompleteIsLessThanZero()
         {
             // Arrange
-            var newTask = new ToDoTask { Id = 0, Title = "Valid Title", Description = "Valid Description", PercentComplete = -0.1M };
+            var newTask = new ToDoTask { Id = 0, Title = "Task", Description = "Description", PercentComplete = -0.1M };
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/tasks", newTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task CreateToDoTask_ReturnsBadRequestWhenPercentCompleteIsGreaterThanOne()
         {
             // Arrange
-            var newTask = new ToDoTask { Id = 0, Title = "Valid Title", Description = "Valid Description", PercentComplete = 1.1M };
+            var newTask = new ToDoTask { Id = 0, Title = "Task", Description = "Description", PercentComplete = 1.1M };
 
             // Act
             var response = await _client.PostAsJsonAsync("/api/tasks", newTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task GetToDoTaskById_ReturnsTask()
         {
-            // Arrange - Create a task first
-            var newTask = new ToDoTask { Id = 0, Title = "Task for GetById", Description = "Description for GetById" };
+            // Arrange
+            var newTask = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
             var postResponse = await _client.PostAsJsonAsync("/api/tasks", newTask);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
@@ -154,7 +143,7 @@ namespace TaskNET.Test.IntegrationTests
         public async Task GetToDoTaskById_ReturnsNotFoundWhenNotExists()
         {
             // Arrange
-            var nonExistentId = 999; // An ID that is highly unlikely to exist
+            var nonExistentId = 999;
 
             // Act
             var response = await _client.GetAsync($"/api/tasks/{nonExistentId}");
@@ -166,14 +155,13 @@ namespace TaskNET.Test.IntegrationTests
         [Fact]
         public async Task UpdateToDoTask_ReturnsUpdatedTask()
         {
-            // Arrange - Create a task first
-            var newTask = new ToDoTask { Id = 0, Title = "Task to Update", Description = "Original Description" };
+            // Arrange
+            var newTask = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
             var postResponse = await _client.PostAsJsonAsync("/api/tasks", newTask);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Update the task
             createdTask.Description = "Updated Description";
 
             // Act
@@ -190,8 +178,8 @@ namespace TaskNET.Test.IntegrationTests
         public async Task UpdateToDoTask_ReturnsNotFoundWhenNotExists()
         {
             // Arrange
-            var nonExistentId = 999; // An ID that is highly unlikely to exist
-            var nonExistentTask = new ToDoTask { Id = nonExistentId, Title = "Non Existent", Description = "Desc" };
+            var nonExistentId = 999;
+            var nonExistentTask = new ToDoTask { Id = nonExistentId, Title = "Task", Description = "Description" };
 
             // Act
             var response = await _client.PutAsJsonAsync($"/api/tasks/{nonExistentId}", nonExistentTask);
@@ -203,169 +191,125 @@ namespace TaskNET.Test.IntegrationTests
         [Fact]
         public async Task UpdateToDoTask_ReturnsBadRequestWhenTitleIsMissing()
         {
-            // Arrange - Create a valid task first
-            var originalTask = new ToDoTask { Id = 0, Title = "Original Title", Description = "Original Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", originalTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Prepare an update with a missing title
-            var updatedTaskData = new ToDoTask
-            {
-                Id = createdTask.Id,
-                Title = "", // Missing title
-                Description = "Updated Description"
-            };
+            createdTask.Title = "";
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", updatedTaskData);
+            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", createdTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task UpdateToDoTask_ReturnsBadRequestWhenTitleIsTooShort()
         {
-            // Arrange - Create a valid task first
-            var originalTask = new ToDoTask { Id = 0, Title = "Original Title", Description = "Original Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", originalTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Prepare an update with a too short title
-            var updatedTaskData = new ToDoTask
-            {
-                Id = createdTask.Id,
-                Title = "a", // Too short title
-                Description = "Updated Description"
-            };
+            createdTask.Title = "ab";
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", updatedTaskData);
+            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", createdTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task UpdateToDoTask_ReturnsBadRequestWhenTitleIsTooLong()
         {
-            // Arrange - Create a valid task first
-            var originalTask = new ToDoTask { Id = 0, Title = "Original Title", Description = "Original Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", originalTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Prepare an update with a too long title
-            var longTitle = new string('a', 101); // 101 characters, max is 100
-            var updatedTaskData = new ToDoTask
-            {
-                Id = createdTask.Id,
-                Title = longTitle, // Too long title
-                Description = "Updated Description"
-            };
+            var longText = new string('a', 101);
+            createdTask.Title = longText;
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", updatedTaskData);
+            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", createdTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task UpdateToDoTask_ReturnsBadRequestWhenDescriptionIsTooLong()
         {
-            // Arrange - Create a valid task first
-            var originalTask = new ToDoTask { Id = 0, Title = "Original Title", Description = "Original Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", originalTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Prepare an update with a too long description
-            var longDescription = new string('a', 251); // 251 characters, max is 250
-            var updatedTaskData = new ToDoTask
-            {
-                Id = createdTask.Id,
-                Title = "Updated Title",
-                Description = longDescription // Too long description
-            };
+            var longText = new string('a', 251);
+            createdTask.Description = longText;
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", updatedTaskData);
+            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", createdTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task UpdateToDoTask_ReturnsBadRequestWhenPercentCompleteIsLessThanZero()
         {
-            // Arrange - Create a valid task first
-            var originalTask = new ToDoTask { Id = 0, Title = "Original Title", Description = "Original Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", originalTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Prepare an update with PercentComplete less than zero
-            var updatedTaskData = new ToDoTask
-            {
-                Id = createdTask.Id,
-                Title = "Updated Title",
-                Description = "Updated Description",
-                PercentComplete = -0.1M
-            };
+            createdTask.PercentComplete = -0.1M;
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", updatedTaskData);
+            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", createdTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task UpdateToDoTask_ReturnsBadRequestWhenPercentCompleteIsGreaterThanOne()
         {
-            // Arrange - Create a valid task first
-            var originalTask = new ToDoTask { Id = 0, Title = "Original Title", Description = "Original Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", originalTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Prepare an update with PercentComplete greater than one
-            var updatedTaskData = new ToDoTask
-            {
-                Id = createdTask.Id,
-                Title = "Updated Title",
-                Description = "Updated Description",
-                PercentComplete = 1.1M
-            };
+            createdTask.PercentComplete = 1.1M;
 
             // Act
-            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", updatedTaskData);
+            var response = await _client.PutAsJsonAsync($"/api/tasks/{createdTask.Id}", createdTask);
 
             // Assert
             Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-            // Optionally, assert on the response body for validation errors
         }
 
         [Fact]
         public async Task DeleteToDoTask_ReturnsNoContent()
         {
-            // Arrange - Create a task first
-            var newTask = new ToDoTask { Id = 0, Title = "Task to Delete", Description = "Description for Delete" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", newTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
@@ -377,7 +321,6 @@ namespace TaskNET.Test.IntegrationTests
             deleteResponse.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.NoContent, deleteResponse.StatusCode);
 
-            // Verify it's deleted
             var getResponse = await _client.GetAsync($"/api/tasks/{createdTask.Id}");
             Assert.Equal(HttpStatusCode.NotFound, getResponse.StatusCode);
         }
@@ -386,7 +329,7 @@ namespace TaskNET.Test.IntegrationTests
         public async Task DeleteToDoTask_ReturnsNotFoundWhenNotExists()
         {
             // Arrange
-            var nonExistentId = 999; // An ID that is highly unlikely to exist
+            var nonExistentId = 999;
 
             // Act
             var response = await _client.DeleteAsync($"/api/tasks/{nonExistentId}");
@@ -398,9 +341,9 @@ namespace TaskNET.Test.IntegrationTests
         [Fact]
         public async Task GetIncomingToDoTasks_ReturnsSuccessAndTasks()
         {
-            // Arrange - Create a task that should be incoming (e.g., today)
-            var newTask = new ToDoTask { Id = 0, Title = "Incoming Task Today", Description = "Description", ExpiryDate = DateTime.UtcNow.AddHours(1) };
-            await _client.PostAsJsonAsync("/api/tasks", newTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description", ExpiryDate = DateTime.UtcNow.AddHours(1) };
+            await _client.PostAsJsonAsync("/api/tasks", task);
 
             // Act
             var response = await _client.GetAsync("/api/tasks/incoming");
@@ -409,15 +352,15 @@ namespace TaskNET.Test.IntegrationTests
             response.EnsureSuccessStatusCode();
             var tasks = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoTask>>();
             Assert.NotNull(tasks);
-            Assert.Contains(tasks, t => t.Title == "Incoming Task Today");
+            Assert.Contains(tasks, t => t.Title == task.Title);
         }
 
         [Fact]
         public async Task GetIncomingToDoTasks_ReturnsTomorrowTasks()
         {
-            // Arrange - Create a task that should be incoming tomorrow
-            var newTask = new ToDoTask { Id = 0, Title = "Incoming Task Tomorrow", Description = "Description", ExpiryDate = DateTime.UtcNow.Date.AddDays(1).AddHours(1) };
-            await _client.PostAsJsonAsync("/api/tasks", newTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description", ExpiryDate = DateTime.UtcNow.Date.AddDays(1).AddHours(1) };
+            await _client.PostAsJsonAsync("/api/tasks", task);
 
             // Act
             var response = await _client.GetAsync("/api/tasks/incoming?incomingTasksFilter=Tomorrow");
@@ -427,15 +370,15 @@ namespace TaskNET.Test.IntegrationTests
             var tasks = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoTask>>();
             Assert.NotNull(tasks);
             Assert.Single(tasks);
-            Assert.Contains(tasks, t => t.Title == "Incoming Task Tomorrow");
+            Assert.Contains(tasks, t => t.Title == task.Title);
         }
 
         [Fact]
         public async Task GetIncomingToDoTasks_ReturnsThisWeekTasks()
         {
-            // Arrange - Create tasks for this week (only today's task will be returned by current AppDataProvider logic)
-            var todayTask = new ToDoTask { Id = 0, Title = "This Week Task Today", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddHours(1) };
-            var nextWeekTask = new ToDoTask { Id = 0, Title = "Next Week Task", Description = "Desc", ExpiryDate = DateTime.UtcNow.Date.AddDays(8).AddHours(1) };
+            // Arrange
+            var todayTask = new ToDoTask { Id = 0, Title = "Task 0", Description = "Description", ExpiryDate = DateTime.UtcNow.Date.AddHours(1) };
+            var nextWeekTask = new ToDoTask { Id = 0, Title = "Task 8", Description = "Description", ExpiryDate = DateTime.UtcNow.Date.AddDays(8).AddHours(1) };
 
             await _client.PostAsJsonAsync("/api/tasks", todayTask);
             await _client.PostAsJsonAsync("/api/tasks", nextWeekTask);
@@ -448,16 +391,16 @@ namespace TaskNET.Test.IntegrationTests
             var tasks = await response.Content.ReadFromJsonAsync<IEnumerable<ToDoTask>>();
             Assert.NotNull(tasks);
             Assert.Single(tasks);
-            Assert.Contains(tasks, t => t.Title == "This Week Task Today");
-            Assert.DoesNotContain(tasks, t => t.Title == "Next Week Task");
+            Assert.Contains(tasks, t => t.Title == todayTask.Title);
+            Assert.DoesNotContain(tasks, t => t.Title == nextWeekTask.Title);
         }
 
         [Fact]
         public async Task SetToDoTaskProgress_ReturnsNoContent()
         {
-            // Arrange - Create a task
-            var newTask = new ToDoTask { Id = 0, Title = "Task for Progress", Description = "Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", newTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
@@ -474,7 +417,7 @@ namespace TaskNET.Test.IntegrationTests
         public async Task SetToDoTaskProgress_ReturnsNotFoundWhenNotExists()
         {
             // Arrange
-            var nonExistentId = 999; // An ID that is highly unlikely to exist
+            var nonExistentId = 999;
 
             // Act
             var patchResponse = await _client.PatchAsync($"/api/tasks/{nonExistentId}/percent?percent=0.5", null);
@@ -486,21 +429,20 @@ namespace TaskNET.Test.IntegrationTests
                 [Fact]
         public async Task SetToDoTaskProgress_SetsIsDoneToTrueWhenPercentCompleteIsOne()
         {
-            // Arrange - Create a task with PercentComplete less than 1.0M
-            var newTask = new ToDoTask { Id = 0, Title = "Task to Complete", Description = "Description", PercentComplete = 0.5M };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", newTask);
+            // Arrange
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description", PercentComplete = 0.5M };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
 
-            // Act - Set PercentComplete to 1.0M
+            // Act
             var patchResponse = await _client.PatchAsync($"/api/tasks/{createdTask.Id}/percent?percent=1.0", null);
 
             // Assert
             patchResponse.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.NoContent, patchResponse.StatusCode);
 
-            // Verify the task is updated and IsDone is true
             var getResponse = await _client.GetAsync($"/api/tasks/{createdTask.Id}");
             getResponse.EnsureSuccessStatusCode();
             var updatedTask = await getResponse.Content.ReadFromJsonAsync<ToDoTask>();
@@ -512,9 +454,8 @@ namespace TaskNET.Test.IntegrationTests
         [Fact]
         public async Task MarkToDoTaskAsDone_ReturnsNoContent()
         {
-            // Arrange - Create a task
-            var newTask = new ToDoTask { Id = 0, Title = "Task to Mark Done", Description = "Description" };
-            var postResponse = await _client.PostAsJsonAsync("/api/tasks", newTask);
+            var task = new ToDoTask { Id = 0, Title = "Task", Description = "Description" };
+            var postResponse = await _client.PostAsJsonAsync("/api/tasks", task);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
             Assert.NotNull(createdTask);
@@ -531,7 +472,7 @@ namespace TaskNET.Test.IntegrationTests
         public async Task MarkToDoTaskAsDone_ReturnsNotFoundWhenNotExists()
         {
             // Arrange
-            var nonExistentId = 999; // An ID that is highly unlikely to exist
+            var nonExistentId = 999;
 
             // Act
             var patchResponse = await _client.PatchAsync($"/api/tasks/{nonExistentId}/done", null);
@@ -543,8 +484,8 @@ namespace TaskNET.Test.IntegrationTests
         [Fact]
         public async Task MarkToDoTaskAsDone_SetsPercentCompleteToOneAndIsDoneToTrue()
         {
-            // Arrange - Create a task that is not done and has some progress
-            var newTask = new ToDoTask { Id = 0, Title = "Task to Mark Done", Description = "Description", PercentComplete = 0.5M, IsDone = false };
+            // Arrange
+            var newTask = new ToDoTask { Id = 0, Title = "Task", Description = "Description", PercentComplete = 0.5M, IsDone = false };
             var postResponse = await _client.PostAsJsonAsync("/api/tasks", newTask);
             postResponse.EnsureSuccessStatusCode();
             var createdTask = await postResponse.Content.ReadFromJsonAsync<ToDoTask>();
@@ -557,7 +498,6 @@ namespace TaskNET.Test.IntegrationTests
             patchResponse.EnsureSuccessStatusCode();
             Assert.Equal(HttpStatusCode.NoContent, patchResponse.StatusCode);
 
-            // Verify the task is updated
             var getResponse = await _client.GetAsync($"/api/tasks/{createdTask.Id}");
             getResponse.EnsureSuccessStatusCode();
             var updatedTask = await getResponse.Content.ReadFromJsonAsync<ToDoTask>();
