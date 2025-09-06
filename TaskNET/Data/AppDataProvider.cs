@@ -36,7 +36,6 @@ namespace TaskNET.Data
         public async Task<IEnumerable<ToDoTask>> GetIncomingToDoTasksAsync(IncomingTasksFilter incomingTasksFilter = IncomingTasksFilter.Today)
         {
             var today = DateTime.UtcNow.Date;
-
             IQueryable<ToDoTask> query;
 
             switch(incomingTasksFilter)
@@ -48,7 +47,16 @@ namespace TaskNET.Data
                     query = _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date == today.AddDays(1));
                     break;
                 case IncomingTasksFilter.ThisWeek:
-                    query = _context.ToDoTasks.Where(t => t.ExpiryDate != null && t.ExpiryDate.Value.Date == today && t.ExpiryDate.Value.Date <= today.AddDays(7));
+                    var remainingDays = (int)DayOfWeek.Sunday - (int)today.DayOfWeek;
+                    if (remainingDays < 0)
+                        remainingDays += 7;
+
+                    var a = today.AddDays(remainingDays);
+
+                    query = _context.ToDoTasks.Where(
+                        t => t.ExpiryDate != null 
+                        && t.ExpiryDate.Value.Date >= today 
+                        && t.ExpiryDate.Value.Date <= today.AddDays(remainingDays));
                     break;
                 default:
                     query = Enumerable.Empty<ToDoTask>().AsQueryable();
