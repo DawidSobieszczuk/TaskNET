@@ -7,6 +7,8 @@ using Microsoft.EntityFrameworkCore;
 
 namespace TaskNET.Test.IntegrationTests
 {
+    // Integration tests for the ToDoTaskController
+    // Uses a dockerized MySQL container for tests, the container is started automatically before the tests and stopped after they are finished, configuration in CustomWebApplicationFactory
     public class ToDoTaskIntegrationTests : IClassFixture<CustomWebApplicationFactory<Program>>
     {
         private readonly CustomWebApplicationFactory<Program> _factory;

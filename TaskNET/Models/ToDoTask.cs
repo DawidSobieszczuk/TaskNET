@@ -4,6 +4,8 @@ using TaskNET.Interfaces;
 
 namespace TaskNET.Models
 {
+    // Model zadania
+    // All data validation is in this place
     public class ToDoTask : IAuditable
     {
         public required int Id { get; set; }

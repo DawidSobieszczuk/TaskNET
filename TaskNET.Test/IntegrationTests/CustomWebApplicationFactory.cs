@@ -10,6 +10,8 @@ using Testcontainers.MySql;
 
 namespace TaskNET.Test.IntegrationTests
 {
+    // Configuration of the web application factory for integration tests
+    // Make sure docker is running before running the tests
     public class CustomWebApplicationFactory<TProgram> : WebApplicationFactory<Program>
     {
         private readonly MySqlContainer _mySqlContainer;

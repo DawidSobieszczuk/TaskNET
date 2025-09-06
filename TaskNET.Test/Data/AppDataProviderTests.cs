@@ -5,6 +5,8 @@ using TaskNET.Interfaces;
 
 namespace TaskNET.Test.Data
 {
+    // Unit tests for AppDataProvider
+    // They don't load into a real database, they use InMemoryDatabase
     public class AppDataProviderTests
     {
         private static AppDbContext GetDbContext(string dbName = "Tests")

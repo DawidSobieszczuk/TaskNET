@@ -4,6 +4,10 @@ using TaskNET.Models;
 
 namespace TaskNET.Data
 {
+    /// <summary>
+    /// Application data provider, implements the IAppDataProvider interface
+    /// Retrieves and modifies data in the database using Entity Framework Core
+    /// </summary>
     public class AppDataProvider : IAppDataProvider
     {
         private readonly AppDbContext _context;

@@ -9,6 +9,9 @@ namespace TaskNET.Interfaces
         ThisWeek
     }
 
+    /// <summary>
+    /// Interface for CRUD operations on tasks
+    /// </summary>
     public interface IAppDataProvider
     {
         Task<IEnumerable<ToDoTask>> GetToDoTasksAsync();

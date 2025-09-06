@@ -4,6 +4,10 @@ using TaskNET.Models;
 
 namespace TaskNET.Controllers
 {
+    /// <summary>
+    /// Controller for CRUD operations on tasks
+    /// </summary>
+    /// <param name="appDataProvider"></param>
     [ApiController]
     [Route("api/tasks")]
     public class ToDoTaskController(IAppDataProvider appDataProvider) : Controller

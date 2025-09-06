@@ -3,6 +3,9 @@ using Microsoft.EntityFrameworkCore.Design;
 
 namespace TaskNET.Data
 {
+    /// <summary>
+    /// Potrzebne do migracji w czasie projektowania
+    /// </summary>
     public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
     {
         public AppDbContext CreateDbContext(string[] args)
