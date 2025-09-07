@@ -57,6 +57,16 @@ dotnet test
 
 The integration tests will automatically spin up a dedicated MySQL container using Testcontainers to ensure tests run in an isolated and clean environment.
 
+#### Performance Tests
+
+The project also includes performance benchmarks using BenchmarkDotNet. To run them, use the following command. Note that these tests can take several minutes to complete as they run multiple iterations to get accurate results.
+
+For the most reliable results, always run performance tests in the `Release` configuration.
+
+```bash
+dotnet test --filter "Category=Performance" --configuration Release
+```
+
 ## API Endpoints
 
 | Method | Endpoint                                    | Description                                               |

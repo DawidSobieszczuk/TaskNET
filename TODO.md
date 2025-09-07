@@ -9,6 +9,6 @@
 - [x] Implement containerization using Docker
 - [x] Add in-code documentation using comments
 - [x] Prepare README.md
-- [ ] Create performance tests
+- [x] Create performance tests
 - [x] Implement data persistence using ORM (e.g., Entity Framework Core with PostgreSQL/MySQL/MariaDB)
 - [x] Implement data validation for ToDoTask model
